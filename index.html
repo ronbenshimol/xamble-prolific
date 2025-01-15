@@ -144,6 +144,19 @@
         const submitButton = document.getElementById('submitButton');
         const messageDiv = document.getElementById('message');
 
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            const results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // Get PROLIFIC_PID and SESSION_ID from URL
+        const prolificPid = getUrlParameter('PROLIFIC_PID');
+        const sessionId = getUrlParameter('SESSION_ID');
+        const studyId = getUrlParameter('STUDY_ID');
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             submitButton.disabled = true;
@@ -154,9 +167,12 @@
             // Calculate time taken in seconds
             const timeTaken = Math.round((new Date() - startTime) / 1000);
 
-            // Create FormData object and append time taken
+            // Create FormData object and append time taken, PROLIFIC_PID, and SESSION_ID
             const formData = new FormData(form);
             formData.append('TimeTaken', timeTaken.toString());
+            formData.append('PROLIFIC_PID', prolificPid);
+            formData.append('SESSION_ID', sessionId);
+            formData.append('STUDY_ID', studyId);
 
             try {
                 const response = await fetch('https://script.google.com/macros/s/AKfycbxwKngjgtZJw4cxGkFAzlSIWclo0jMXWO7Tn8g1PJn4qX7eJm1meJTzkQNsjFIOAjvqHA/exec', {
